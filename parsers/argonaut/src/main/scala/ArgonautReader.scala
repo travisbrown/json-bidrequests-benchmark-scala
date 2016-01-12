@@ -1,11 +1,11 @@
-package parsers.argonaut
+package parsers
 
-import scalaz._, Scalaz._
-import argonaut._, Argonaut._
-import models.ParsingResult
+import argonaut.Argonaut._
+import argonaut._
+
+import models._
 import models.bidrequest._
 import models.bidrequest.device._
-import parsers.BidRequestParser
 
 object ArgonautReader extends BidRequestParser {
   override def parse(index: Int, line: String, lastResult: ParsingResult) = {
@@ -17,18 +17,6 @@ object ArgonautReader extends BidRequestParser {
       )
     )
   }
-
-
-  /*implicit def optSeqDecoder[T](implicit decodeT: DecodeJson[T]) = DecodeJson[Option[Seq[T]]]((json: HCursor) =>
-    json.as[Option[Json]].flatMap {
-      case Some(seqJson) => seqJson.as[List[T]].map(list => Some(list.toSeq))
-      case _ => DecodeResult.ok[Option[Seq[T]]](None)
-    }
-  )*/
-
-  implicit def seqDecoder[T](implicit decodeT: DecodeJson[T]) = DecodeJson[Seq[T]]((json: HCursor) =>
-    json.as[List[T]].map(_.toSeq)
-  )
 
   implicit val extDecoder = jdecode1L(Ext.apply)("sessiondepth")
   implicit val publisherDecoder = jdecode5L(Publisher.apply)("id", "name", "cat", "domain", "ext")
@@ -84,7 +72,7 @@ object ArgonautReader extends BidRequestParser {
       bidfloor <- c.get[Option[Float]]("bidfloor").map(_.getOrElse(0f))
       bidfloorcur <- c.get[Option[String]]("bidfloorcur").map(_.getOrElse("USD"))
       secure <- c.get[Option[Int]]("secure").map(_.contains(1))
-      iframebuster <- c.get[Option[Seq[String]]]("iframebuster")
+      iframebuster <- c.get[Option[List[String]]]("iframebuster")
       pmp <- c.get[Option[Pmp]]("pmp")
       ext <- c.get[Option[Ext]]("ext")
     } yield Imp(id, banner, video, native, displaymanager, displaymanagerver, instl, tagid, bidfloor, bidfloorcur, secure, iframebuster, pmp, ext)
@@ -93,7 +81,7 @@ object ArgonautReader extends BidRequestParser {
   implicit val bidRequestDecoder = DecodeJson((c: HCursor) =>
     for {
       id <- c.get[String]("id")
-      imp <- c.get[Seq[Imp]]("imp")
+      imp <- c.get[List[Imp]]("imp")
       site <- c.get[Option[Site]]("site")
       app <- c.get[Option[App]]("app")
       device <- c.get[Option[Device]]("device")
@@ -101,11 +89,11 @@ object ArgonautReader extends BidRequestParser {
       test <- c.get[Option[Int]]("test").map(_.getOrElse(0))
       at <- c.get[Option[Int]]("at").map(_.getOrElse(0))
       tmax <- c.get[Option[Int]]("tmax")
-      wseat <- c.get[Option[Seq[String]]]("wseat")
+      wseat <- c.get[Option[List[String]]]("wseat")
       allimps <- c.get[Option[Int]]("allimps").map(_.getOrElse(0))
-      cur <- c.get[Option[Seq[String]]]("cur")
-      bcat <- c.get[Option[Seq[String]]]("bcat")
-      badv <- c.get[Option[Seq[String]]]("badv")
+      cur <- c.get[Option[List[String]]]("cur")
+      bcat <- c.get[Option[List[String]]]("bcat")
+      badv <- c.get[Option[List[String]]]("badv")
       regs <- c.get[Option[Regs]]("regs")
       ext <- c.get[Option[Ext]]("ext")
     } yield BidRequest(id, imp, site, app, device, user, test, at, tmax, wseat, allimps, cur, bcat, badv, regs, ext)

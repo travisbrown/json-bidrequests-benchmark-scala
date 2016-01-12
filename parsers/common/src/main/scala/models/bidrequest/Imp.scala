@@ -12,7 +12,7 @@ case class Imp(
   bidfloor: Float = 0,
   bidfloorcur: String = "USD",
   secure: Boolean = false,
-  iframebuster: Option[Seq[String]] = None,
+  iframebuster: Option[List[String]] = None,
   pmp: Option[Pmp] = None,
   ext: Option[Ext] = None
 )

@@ -1,23 +1,21 @@
-package parsers.playjson
+package parsers
 
-import models.ParsingResult
-import models.bidrequest.device._
-import models.bidrequest._
-
-import play.api.libs.json._
-import play.api.libs.json.Reads._
 import play.api.libs.functional.syntax._
+import play.api.libs.json.Reads._
+import play.api.libs.json._
 
-import parsers.BidRequestParser
+import models.bidrequest._
+import models.bidrequest.device._
+import models.{BidRequestParser, ParsingResult}
 
 object PlayReader extends BidRequestParser {
 
   override def parse(id: Int, line: String, lastResult: ParsingResult): ParsingResult = {
     try {
       val json = Json.parse(line)
-      bidRequestRead.reads(json).fold(err => { println(s"[$id] Invalid object $err"); lastResult.incrCannotUnmarshal }, _ => lastResult.incrOk)
+      bidRequestRead.reads(json).fold(err => lastResult.incrCannotUnmarshal, _ => lastResult.incrOk)
     } catch {
-      case ex: Throwable => { println(s"[$id] Invalid JSON $ex"); lastResult.incrCannotParse }
+      case ex: Throwable => lastResult.incrCannotParse
     }
   }
 
@@ -71,14 +69,14 @@ object PlayReader extends BidRequestParser {
     (__ \ "bidfloor").readNullable[Float].map(_.getOrElse(0f)) and
     (__ \ "bidfloorcur").readNullable[String].map(_.getOrElse("USD")) and
     (__ \ "secure").readNullable[Int].map(_.contains(1)) and
-    (__ \ "iframebuster").readNullable[Seq[String]] and
+    (__ \ "iframebuster").readNullable[List[String]] and
     (__ \ "pmp").readNullable[Pmp] and
     (__ \ "ext").readNullable[Ext]
   )(Imp.apply _)
 
   implicit val bidRequestRead: Reads[BidRequest] = (
     (__ \ "id").read[String] and
-    (__ \ "imp").read[Seq[Imp]] and
+    (__ \ "imp").read[List[Imp]] and
     (__ \ "site").readNullable[Site] and
     (__ \ "app").readNullable[App] and
     (__ \ "device").readNullable[Device] and
@@ -86,11 +84,11 @@ object PlayReader extends BidRequestParser {
     (__ \ "test").readNullable[Int].map(_.getOrElse(0)) and
     (__ \ "at").readNullable[Int].map(_.getOrElse(0)) and
     (__ \ "tmax").readNullable[Int] and
-    (__ \ "wseat").readNullable[Seq[String]] and
+    (__ \ "wseat").readNullable[List[String]] and
     (__ \ "allimps").readNullable[Int].map(_.getOrElse(0)) and
-    (__ \ "cur").readNullable[Seq[String]] and
-    (__ \ "bcat").readNullable[Seq[String]] and
-    (__ \ "badv").readNullable[Seq[String]] and
+    (__ \ "cur").readNullable[List[String]] and
+    (__ \ "bcat").readNullable[List[String]] and
+    (__ \ "badv").readNullable[List[String]] and
     (__ \ "regs").readNullable[Regs] and
     (__ \ "ext").readNullable[Ext]
   )(BidRequest.apply _)

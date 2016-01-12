@@ -1,10 +1,7 @@
+import scala.io.Codec
 import java.io.File
-import models.ParsingResult
-import parsers.BidRequestParser
-import parsers.argonaut.ArgonautReader
-import parsers.circe.CirceReader
-import parsers.json4s.Json4sSemiAutoReader
-import parsers.playjson.PlayReader
+import models._
+import parsers._
 
 object Benchmark {
   def main(args: Array[String]): Unit = {
@@ -12,25 +9,37 @@ object Benchmark {
     val filename = "1log"
     val file = new File(s"/home/julien/work/projects/json-benchmark/test-data/$filename")
 
-    val lib = args.headOption.getOrElse("play")
-    val source = scala.io.Source.fromFile(file)
+    val runOnlyOneParser = args.headOption
 
-    val reader: BidRequestParser = lib match {
-      case "play" => PlayReader
-      case "circe" => CirceReader
-      case "json4s" => Json4sSemiAutoReader
-      case "argonaut" => ArgonautReader
-      case _ => sys.error("unknow library")
+    val parsers = Map(
+      "play" -> PlayReader,
+      "circe" -> CirceReader,
+      "json4s-native" -> Json4sSemiAutoNativeReader,
+      "json4s-jackson" -> Json4sSemiAutoJacksonReader,
+      "argonaut" -> ArgonautReader
+    )
+
+    def runForFile(parser: BidRequestParser) = run(file, parser)
+
+    runOnlyOneParser match {
+      case Some(lib) if parsers.contains(lib) => runForFile(parsers(lib))
+      case Some(lib) if !parsers.contains(lib) => sys.error(s"Unknown parser $lib")
+      case _ => parsers.values.foreach(runForFile)
     }
 
-    println(s"Starting benchmark with $lib and file ${file.getName}")
+  }
+
+  private def run(file: File, parser: BidRequestParser) = {
+    val source = scala.io.Source.fromFile(file)(Codec.UTF8)
+    println(s"Running ${parser.getClass.getName}")
+
     val start = System.nanoTime()
-    val total = source.getLines().zipWithIndex.foldLeft(ParsingResult(0, 0, 0)) { case (result, (line, index) ) =>
-      reader.parse(index, line, result)
+    val result = source.getLines().zipWithIndex.foldLeft(ParsingResult(0, 0, 0)) { case (r, (line, index) ) =>
+      parser.parse(index, line, r)
     }
     val end = System.nanoTime()
     source.close()
 
-    println(total + " in " + ((end - start) / 1000000) + "ms")
+    println(result + " in " + ((end - start) / 1000000) + "ms")
   }
 }

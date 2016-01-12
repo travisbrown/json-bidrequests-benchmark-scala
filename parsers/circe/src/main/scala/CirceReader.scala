@@ -1,19 +1,20 @@
-package parsers.circe
+package parsers
 
 import io.circe._
 import io.circe.generic.auto._
+import io.circe.parse._
+import io.circe.syntax._
 
-import models.ParsingResult
 import models.bidrequest._
 import models.bidrequest.device._
-import parsers.BidRequestParser
+import models.{BidRequestParser, ParsingResult}
 
 object CirceReader extends BidRequestParser {
 
   override def parse(id: Int, line: String, lastResult: ParsingResult): ParsingResult = {
     io.circe.jawn.parse(line).fold(
-      err => { println(s"[$id] Invalid JSON $err"); lastResult.incrCannotParse },
-      json => bidRequestDecoder.decodeJson(json).fold(errs => { println(s"[$id] Invalid object $errs"); lastResult.incrCannotUnmarshal }, _ => lastResult.incrOk)
+      err => lastResult.incrCannotParse,
+      json => bidRequestDecoder.decodeJson(json).fold(errs => lastResult.incrCannotUnmarshal, _ => lastResult.incrOk)
     )
   }
 
@@ -70,7 +71,7 @@ object CirceReader extends BidRequestParser {
       bidfloor <- c.get[Option[Float]]("bidfloor").map(_.getOrElse(0f))
       bidfloorcur <- c.get[Option[String]]("bidfloorcur").map(_.getOrElse("USD"))
       secure <- c.get[Option[Int]]("secure").map(_.contains(1))
-      iframebuster <- c.get[Option[Seq[String]]]("iframebuster")
+      iframebuster <- c.get[Option[List[String]]]("iframebuster")
       pmp <- c.get[Option[Pmp]]("pmp")
       ext <- c.get[Option[Ext]]("ext")
     } yield Imp(id, banner, video, native, displaymanager, displaymanagerver, instl, tagid, bidfloor, bidfloorcur, secure, iframebuster, pmp, ext)
@@ -79,7 +80,7 @@ object CirceReader extends BidRequestParser {
   implicit val bidRequestDecoder = Decoder.instance( (c: HCursor) =>
     for {
       id <- c.get[String]("id")
-      imp <- c.get[Seq[Imp]]("imp")
+      imp <- c.get[List[Imp]]("imp")
       site <- c.get[Option[Site]]("site")
       app <- c.get[Option[App]]("app")
       device <- c.get[Option[Device]]("device")
@@ -87,11 +88,11 @@ object CirceReader extends BidRequestParser {
       test <- c.get[Option[Int]]("test").map(_.getOrElse(0))
       at <- c.get[Option[Int]]("at").map(_.getOrElse(0))
       tmax <- c.get[Option[Int]]("tmax")
-      wseat <- c.get[Option[Seq[String]]]("wseat")
+      wseat <- c.get[Option[List[String]]]("wseat")
       allimps <- c.get[Option[Int]]("allimps").map(_.getOrElse(0))
-      cur <- c.get[Option[Seq[String]]]("cur")
-      bcat <- c.get[Option[Seq[String]]]("bcat")
-      badv <- c.get[Option[Seq[String]]]("badv")
+      cur <- c.get[Option[List[String]]]("cur")
+      bcat <- c.get[Option[List[String]]]("bcat")
+      badv <- c.get[Option[List[String]]]("badv")
       regs <- c.get[Option[Regs]]("regs")
       ext <- c.get[Option[Ext]]("ext")
     } yield BidRequest(id, imp, site, app, device, user, test, at, tmax, wseat, allimps, cur, bcat, badv, regs, ext)

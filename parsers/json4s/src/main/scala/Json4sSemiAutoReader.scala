@@ -1,21 +1,36 @@
-package parsers.json4s
+package parsers
 
-import org.json4s.{DefaultFormats, MappingException, JValue}
+import scala.util.control.NonFatal
 
-import parsers.BidRequestParser
+import org.json4s.{DefaultFormats, JValue, MappingException}
+import org.json4s._
+
 import models._
 import models.bidrequest._
 import models.bidrequest.device._
 
-object Json4sSemiAutoReader extends BidRequestParser {
+object Json4sSemiAutoNativeReader extends Json4sReader with BidRequestParser {
   override def parse(index: Int, line: String, lastResult: ParsingResult) = {
+    genericParse(index, line, lastResult)(org.json4s.native.JsonMethods.parse(_, false, false))
+  }
+}
+
+object Json4sSemiAutoJacksonReader extends Json4sReader with BidRequestParser {
+  override def parse(index: Int, line: String, lastResult: ParsingResult) = {
+    genericParse(index, line, lastResult)(org.json4s.jackson.JsonMethods.parse(_, false, false))
+  }
+}
+
+trait Json4sReader {
+
+  def genericParse(index: Int, line: String, lastResult: ParsingResult)(jsonParser: JsonInput => JValue): ParsingResult = {
     try {
-      val json: JValue = org.json4s.jackson.JsonMethods.parse(line)
+      val json: JValue = jsonParser(line)
       val bid = read(json)
       lastResult.incrOk
     } catch {
       case ex: MappingException => lastResult.incrCannotUnmarshal
-      case _ => lastResult.incrCannotParse
+      case NonFatal(ex) => lastResult.incrCannotParse
     }
   }
 
@@ -24,7 +39,7 @@ object Json4sSemiAutoReader extends BidRequestParser {
   def read(json: JValue) = {
     BidRequest(
       id = (json \ "id").extract[String],
-      imp = (json \ "imp").extract[Seq[JValue]].map { imp =>
+      imp = (json \ "imp").extract[List[JValue]].map { imp =>
         Imp(
           id = (imp \ "id").extract[String],
           banner = (imp \ "banner").extractOpt[Banner],
@@ -37,7 +52,7 @@ object Json4sSemiAutoReader extends BidRequestParser {
           bidfloor = (imp \ "bidfloor").extractOpt[Float].getOrElse(0f),
           bidfloorcur = (imp \ "bidfloorcur").extractOpt[String].getOrElse("USD"),
           secure = (imp \ "secure").extractOpt[Int].contains(1),
-          iframebuster = (imp \ "iframebuster").extractOpt[Seq[String]],
+          iframebuster = (imp \ "iframebuster").extractOpt[List[String]],
           pmp = (imp \ "pmp").extractOpt[Pmp],
           ext = (imp \ "ext").extractOpt[Ext]
         )
@@ -62,11 +77,11 @@ object Json4sSemiAutoReader extends BidRequestParser {
       test = (json \ "test").extractOpt[Int].getOrElse(0),
       at = (json \ "at").extractOpt[Int].getOrElse(0),
       tmax = (json \ "tmax").extractOpt[Int],
-      wseat = (json \ "wseat").extractOpt[Seq[String]],
+      wseat = (json \ "wseat").extractOpt[List[String]],
       allimps = (json \ "allimps").extractOpt[Int].getOrElse(0),
-      cur = (json \ "cur").extractOpt[Seq[String]],
-      bcat = (json \ "bcat").extractOpt[Seq[String]],
-      badv = (json \ "badv").extractOpt[Seq[String]],
+      cur = (json \ "cur").extractOpt[List[String]],
+      bcat = (json \ "bcat").extractOpt[List[String]],
+      badv = (json \ "badv").extractOpt[List[String]],
       regs = (json \ "regs").extractOpt[Regs],
       ext = (json \ "ext").extractOpt[Ext]
     )

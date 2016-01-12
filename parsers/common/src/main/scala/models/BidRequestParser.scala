@@ -1,6 +1,4 @@
-package parsers
-
-import models.ParsingResult
+package models
 
 trait BidRequestParser {
 
