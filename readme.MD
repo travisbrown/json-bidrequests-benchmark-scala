@@ -8,9 +8,9 @@
 
 * [Play-JSON](https://github.com/studiodev/json-bidrequests-benchmark-scala/blob/master/parsers/play/src/main/scala/PlayReader.scala#L36). <br/>_Compile-time macro, Functional builders_
 * Play-JSON with JAWN parsing
-* [Spray](https://github.com/studiodev/json-bidrequests-benchmark-scala/blob/master/parsers/spray/src/main/scala/SprayReader.scala).<br/>_Runtime reflection for case-class. Could be optimized, but it will becore extremly verbose!_
+* [Spray](https://github.com/studiodev/json-bidrequests-benchmark-scala/blob/master/parsers/spray/src/main/scala/SprayReader.scala).<br/>_Runtime reflection for case-class parsing (but just one time?)_
 * Spray with JAWN parsing
-* [Json4S](https://github.com/studiodev/json-bidrequests-benchmark-scala/blob/master/parsers/json4s/src/main/scala/Json4sReader.scala).<br/>_?_
+* [Json4S](https://github.com/studiodev/json-bidrequests-benchmark-scala/blob/master/parsers/json4s/src/main/scala/Json4sReader.scala).<br/>_Runtime reflection for case-class parsing?_
 * JSON4S with Jackson parsing
 * Json4S with JAWN parsing
 * [Circe](https://github.com/studiodev/json-bidrequests-benchmark-scala/blob/master/parsers/circe/src/main/scala/CirceReader.scala) with JAWN parsing.<br/>_Fork of Argonaut, replacing Scalaz by Cats and macro by shapeless (compile-time derivation). Monadic decoders_
