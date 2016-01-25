@@ -4,11 +4,16 @@ scalaVersion in ThisBuild := "2.11.7"
 
 lazy val root = (project in file("."))
   .dependsOn(common)
+  .dependsOn(benchs)
+
+lazy val benchs = (project in file("benchs"))
+  .dependsOn(common)
   .dependsOn(playjson)
   .dependsOn(circe)
   .dependsOn(json4s)
   .dependsOn(argonaut)
   .dependsOn(spray)
+  .enablePlugins(JmhPlugin)
 
 libraryDependencies in ThisBuild ++= Seq(
   "org.spire-math" %% "jawn-parser" % "0.8.3"
