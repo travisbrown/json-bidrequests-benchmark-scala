@@ -7,14 +7,14 @@ import io.circe.syntax._
 
 import models.bidrequest._
 import models.bidrequest.device._
-import models.{BidRequestParser, ParsingResult}
+import models.{BidRequestReader, ParsingResult}
 
-object CirceReader extends BidRequestParser {
+object CirceReader extends BidRequestReader {
 
-  override def parse(id: Int, line: String, lastResult: ParsingResult): ParsingResult = {
+  override def parse(line: String, lastResult: ParsingResult): ParsingResult = {
     io.circe.jawn.parse(line).fold(
-      err => lastResult.incrCannotParse,
-      json => bidRequestDecoder.decodeJson(json).fold(errs => lastResult.incrCannotUnmarshal, _ => lastResult.incrOk)
+      _ => lastResult.incrCannotParse,
+      json => bidRequestDecoder.decodeJson(json).fold(_ => lastResult.incrCannotUnmarshal, _ => lastResult.incrOk)
     )
   }
 

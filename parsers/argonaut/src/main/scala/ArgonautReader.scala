@@ -1,5 +1,7 @@
 package parsers
 
+import scala.util.Success
+
 import argonaut.Argonaut._
 import argonaut._
 
@@ -7,15 +9,16 @@ import models._
 import models.bidrequest._
 import models.bidrequest.device._
 
-object ArgonautReader extends BidRequestParser {
-  override def parse(index: Int, line: String, lastResult: ParsingResult) = {
-    line.parse.fold(
-      err => lastResult.incrCannotParse,
-      json => json.as[BidRequest].fold(
-        { case (errs, _) => lastResult.incrCannotUnmarshal },
-        _ => lastResult.incrOk
-      )
-    )
+object ArgonautReader extends BidRequestReader {
+  override def parse(line: String, lastResult: ParsingResult) = {
+    jawn.support.argonaut.Parser.parseFromString(line) match {
+      case Success(json) =>
+        json.as[BidRequest].fold(
+          { case (_, _) => lastResult.incrCannotUnmarshal },
+          _ => lastResult.incrOk
+        )
+      case _ => lastResult.incrCannotParse
+    }
   }
 
   implicit val extDecoder = jdecode1L(Ext.apply)("sessiondepth")

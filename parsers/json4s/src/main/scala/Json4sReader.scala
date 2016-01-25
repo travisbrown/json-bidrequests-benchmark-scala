@@ -1,40 +1,55 @@
 package parsers
 
-import scala.util.control.NonFatal
+import scala.util._
 
-import org.json4s.{DefaultFormats, JValue, MappingException}
 import org.json4s._
 
 import models._
 import models.bidrequest._
 import models.bidrequest.device._
 
-object Json4sSemiAutoNativeReader extends Json4sReader with BidRequestParser {
-  override def parse(index: Int, line: String, lastResult: ParsingResult) = {
-    genericParse(index, line, lastResult)(org.json4s.native.JsonMethods.parse(_, false, false))
+object Json4sJawnReader extends BidRequestReader {
+  override def parse(line: String, lastResult: ParsingResult): ParsingResult = {
+    jawn.support.json4s.Parser.parseFromString(line) match {
+      case Success(json: JsonAST.JValue) => Json4sReader.safeRead(json, lastResult)
+      case _ => lastResult.incrCannotParse
+    }
   }
 }
 
-object Json4sSemiAutoJacksonReader extends Json4sReader with BidRequestParser {
-  override def parse(index: Int, line: String, lastResult: ParsingResult) = {
-    genericParse(index, line, lastResult)(org.json4s.jackson.JsonMethods.parse(_, false, false))
-  }
-}
-
-trait Json4sReader {
-
-  def genericParse(index: Int, line: String, lastResult: ParsingResult)(jsonParser: JsonInput => JValue): ParsingResult = {
+object Json4sNativeReader extends BidRequestReader {
+  override def parse(line: String, lastResult: ParsingResult): ParsingResult = {
     try {
-      val json: JValue = jsonParser(line)
-      val bid = read(json)
+      val json = org.json4s.native.JsonMethods.parse(line)
+      Json4sReader.safeRead(json, lastResult)
+    } catch {
+      case _: Throwable => lastResult.incrCannotUnmarshal
+    }
+  }
+}
+
+object Json4sJacksonReader extends BidRequestReader {
+  override def parse(line: String, lastResult: ParsingResult): ParsingResult = {
+    try {
+      val json = org.json4s.jackson.JsonMethods.parse(line)
+      Json4sReader.safeRead(json, lastResult)
+    } catch {
+      case _: Throwable => lastResult.incrCannotUnmarshal
+    }
+  }
+}
+
+object Json4sReader {
+  implicit val formats = DefaultFormats
+
+  @inline def safeRead(json: JValue, lastResult: ParsingResult): ParsingResult = {
+    try {
+      read(json)
       lastResult.incrOk
     } catch {
       case ex: MappingException => lastResult.incrCannotUnmarshal
-      case NonFatal(ex) => lastResult.incrCannotParse
     }
   }
-
-  implicit val formats = DefaultFormats
 
   def read(json: JValue) = {
     BidRequest(

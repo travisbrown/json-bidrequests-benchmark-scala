@@ -1,22 +1,44 @@
 package parsers
 
+import scala.util.Success
+import scala.util.control.NonFatal
+
 import play.api.libs.functional.syntax._
 import play.api.libs.json.Reads._
 import play.api.libs.json._
 
 import models.bidrequest._
 import models.bidrequest.device._
-import models.{BidRequestParser, ParsingResult}
+import models.{BidRequestReader, ParsingResult}
 
-object PlayReader extends BidRequestParser {
-
-  override def parse(id: Int, line: String, lastResult: ParsingResult): ParsingResult = {
+object PlayNativeReader extends BidRequestReader {
+  override def parse(line: String, lastResult: ParsingResult): ParsingResult = {
     try {
       val json = Json.parse(line)
-      bidRequestRead.reads(json).fold(err => lastResult.incrCannotUnmarshal, _ => lastResult.incrOk)
+      PlayReader.safeRead(json, lastResult)
     } catch {
-      case ex: Throwable => lastResult.incrCannotParse
+      case _: Throwable => lastResult.incrCannotParse
     }
+  }
+
+}
+
+object PlayJawnReader extends BidRequestReader {
+  override def parse(line: String, lastResult: ParsingResult): ParsingResult = {
+    jawn.support.play.Parser.parseFromString(line) match {
+      case Success(json) => PlayReader.safeRead(json, lastResult)
+      case _ => lastResult.incrCannotParse
+    }
+  }
+
+}
+
+object PlayReader {
+
+  @inline def safeRead(json: JsValue, lastResult: ParsingResult): ParsingResult = {
+    bidRequestRead.reads(json).fold(
+      err => lastResult.incrCannotUnmarshal,
+      _ => lastResult.incrOk)
   }
 
   implicit val extRead = Json.reads[Ext]
