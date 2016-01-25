@@ -1,10 +1,6 @@
-name := "json-benchmark"
+name := "json-bidrequests-benchmark"
 version := "0.0.1"
 scalaVersion in ThisBuild := "2.11.7"
-
-lazy val root = (project in file("."))
-  .dependsOn(common)
-  .dependsOn(benchs)
 
 lazy val benchs = (project in file("benchs"))
   .dependsOn(common)
