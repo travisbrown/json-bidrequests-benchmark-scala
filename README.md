@@ -1,20 +1,18 @@
-# Just another JSON scala benchmark
-
- 
+# Just another JSON scala benchmark 
 
 > **Warning:** This benchmark is HEAVILY opiniated. It's only focus on the unmarshmalling of RTB bid-requests to a unified case-class representation.
 
 ## Candidates:
 
-* [Play-JSON](https://github.com/studiodev/json-bidrequests-benchmark-scala/blob/master/parsers/play/src/main/scala/PlayReader.scala#L36). <br/>_Compile-time macro, Functional builders_
+* [Play-JSON](https://github.com/studiodev/json-bidrequests-benchmark-scala/blob/master/parsers/play/src/main/scala/PlayReader.scala#L36) <br/>_Compile-time macro, Functional builders_
 * Play-JSON with JAWN parsing
-* [Spray](https://github.com/studiodev/json-bidrequests-benchmark-scala/blob/master/parsers/spray/src/main/scala/SprayReader.scala).<br/>_Runtime reflection for case-class parsing (but just one time?)_
+* [Spray](https://github.com/studiodev/json-bidrequests-benchmark-scala/blob/master/parsers/spray/src/main/scala/SprayReader.scala)<br/>_Runtime reflection for case-class parsing (but just one time?)_
 * Spray with JAWN parsing
-* [Json4S](https://github.com/studiodev/json-bidrequests-benchmark-scala/blob/master/parsers/json4s/src/main/scala/Json4sReader.scala).<br/>_Runtime reflection for case-class parsing?_
+* [Json4S](https://github.com/studiodev/json-bidrequests-benchmark-scala/blob/master/parsers/json4s/src/main/scala/Json4sReader.scala)<br/>_Runtime reflection for case-class parsing?_
 * JSON4S with Jackson parsing
 * Json4S with JAWN parsing
-* [Circe](https://github.com/studiodev/json-bidrequests-benchmark-scala/blob/master/parsers/circe/src/main/scala/CirceReader.scala) with JAWN parsing.<br/>_Fork of Argonaut, replacing Scalaz by Cats and macro by shapeless (compile-time derivation). Monadic decoders_
-* [Argonaut](https://github.com/studiodev/json-bidrequests-benchmark-scala/blob/master/parsers/argonaut/src/main/scala/ArgonautReader.scala) with JAWN parsing.<br/>_Based on scalaZ and macro for devirvation. More verbose than Circe. Monadic decoders_
+* [Circe](https://github.com/studiodev/json-bidrequests-benchmark-scala/blob/master/parsers/circe/src/main/scala/CirceReader.scala) with JAWN parsing<br/>_Fork of Argonaut, replacing Scalaz by Cats and macro by shapeless (compile-time derivation). Monadic decoders_
+* [Argonaut](https://github.com/studiodev/json-bidrequests-benchmark-scala/blob/master/parsers/argonaut/src/main/scala/ArgonautReader.scala) with JAWN parsing<br/>_Based on scalaZ and macro for devirvation. More verbose than Circe. Monadic decoders_
 
 ## Results
 
