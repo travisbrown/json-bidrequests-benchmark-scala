@@ -32,7 +32,30 @@ _lower is better_
 [info] OneFileReadersbenchmarks.bench      spray-jawn  avgt    2  56,005           s/op
 ```
 
-## How to run ?
+## Why JAWN?
+
+Because it has demonstrated is powerfull in a previous benchmark -better than Jackson in this use case- (based on [that](https://github.com/non/jawn/tree/master/benchmark/src/main/scala/jawn)). And it offers an excellent compability with spray, play, argonaut, json4s...
+
+```
+600mo soit 457000 bidrequests à convertir de String -> AST JSON (sur 3 itérations), en mode mono-thread
+
+Jawn parser vers Json4s AST              5162,167 ±  2632,244  ms/op
+Jawn parser                              5225,790 ±   773,930  ms/op
+Jackson parser                           5413,639 ± 10426,827  ms/op
+Jawn parser vers Play AST                6715,119 ±    21,964  ms/op
+Jackson parser vers Json4s AST           6921,634 ±  2593,722  ms/op
+Jawn parser vers rojomaV3 AST            8194,332 ±  5801,958  ms/op
+rojomaV3 parser                          8454,855 ±  5527,186  ms/op
+Json4s native parser                     8472,026 ±  1119,310  ms/op
+Jawn parser vers Spray AST               8539,325 ± 13691,695  ms/op
+Gson parser                              8694,811 ±  6496,280  ms/op
+Jackson parser vers Play AST             9472,178 ± 31644,102  ms/op
+Jawn parser vers Argonaut AST            9932,325 ± 27138,863  ms/op
+Spray parser                            10226,288 ± 11983,117  ms/op
+Argonaut parser                         13074,731 ±  9339,648  ms/op
+```
+
+## How to run?
 
 ```
 sbt
