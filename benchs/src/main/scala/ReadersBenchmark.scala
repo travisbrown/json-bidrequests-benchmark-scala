@@ -9,6 +9,9 @@ import models.{ParsingResult, BidRequestReader}
 
 @State(Scope.Benchmark)
 abstract class ReadersBenchmark(file: File) {
+  val source = scala.io.Source.fromFile(file)(Codec.UTF8)
+  val lines = source.getLines().toVector
+  source.close()
 
   def run(file: File, reader: BidRequestReader): Unit = {
     val source = scala.io.Source.fromFile(file)(Codec.UTF8)
@@ -28,11 +31,9 @@ abstract class ReadersBenchmark(file: File) {
   @Benchmark
   def bench(): Unit = {
     val reader = Referential.readers(readerName)
-    val source = scala.io.Source.fromFile(file)(Codec.UTF8)
-    val result = source.getLines().foldLeft(ParsingResult(0, 0, 0)) { case (r, line) =>
+    val result = lines.iterator.foldLeft(ParsingResult(0, 0, 0)) { case (r, line) =>
       reader.parse(line, r)
     }
-    source.close()
 
     assert(result.cannotParse == 0)
     assert(result.cannotUnmarshal == 0)
