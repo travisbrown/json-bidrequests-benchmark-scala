@@ -18,18 +18,20 @@
 
 _lower is better_
 
-> read and parse 1go on real bid-requests (mopub extract)
+> Parse and decode a 600mo file containing around 45000 bid-requests, extracted from real RTB traffic.<br>
+> Benchmark run on an AWS c4.2xlarge instance, with `benchs/jmh:run -i 4 -wi 2 -f1 -t1 -bm avgt` (about 25mn)
 
 ```
-[info] OneFileReadersbenchmarks.bench      circe-jawn  avgt    2  20,624           s/op
-[info] OneFileReadersbenchmarks.bench   argonaut-jawn  avgt    2  20,819           s/op
-[info] OneFileReadersbenchmarks.bench       play-jawn  avgt    2  24,593           s/op
-[info] OneFileReadersbenchmarks.bench            play  avgt    2  26,712           s/op
-[info] OneFileReadersbenchmarks.bench     json4s-jawn  avgt    2  39,192           s/op
-[info] OneFileReadersbenchmarks.bench  json4s-jackson  avgt    2  43,074           s/op
-[info] OneFileReadersbenchmarks.bench          json4s  avgt    2  44,704           s/op
-[info] OneFileReadersbenchmarks.bench           spray  avgt    2  58,840           s/op
-[info] OneFileReadersbenchmarks.bench      spray-jawn  avgt    2  56,005           s/op
+[info] Benchmark                         (readerName)  Mode  Cnt   Score   Error  Units
+[info] OneFileReadersbenchmarks.bench      spray-jawn  avgt    4   9.292 ± 0.032   s/op
+[info] OneFileReadersbenchmarks.bench           spray  avgt    4  11.692 ± 0.060   s/op
+[info] OneFileReadersbenchmarks.bench      circe-jawn  avgt    4  18.034 ± 0.323   s/op
+[info] OneFileReadersbenchmarks.bench   argonaut-jawn  avgt    4  20.398 ± 0.201   s/op
+[info] OneFileReadersbenchmarks.bench       play-jawn  avgt    4  24.040 ± 0.154   s/op
+[info] OneFileReadersbenchmarks.bench            play  avgt    4  28.066 ± 0.126   s/op
+[info] OneFileReadersbenchmarks.bench     json4s-jawn  avgt    4  40.180 ± 0.322   s/op
+[info] OneFileReadersbenchmarks.bench  json4s-jackson  avgt    4  43.033 ± 0.422   s/op
+[info] OneFileReadersbenchmarks.bench          json4s  avgt    4  45.548 ± 0.416   s/op
 ```
 
 ## Why JAWN?
@@ -61,4 +63,6 @@ Argonaut parser                         13074,731 ±  9339,648  ms/op
 sbt
 $> benchs/jmh:run -i 2 -wi 1 -f1 -t1 -bm avgt
 ```
+
+The json file used to run this benchmark is too big to be stored on Github. Feel free to ask me the file by DM on twitter ([@julien_lafont](https://www.twitter.com/julien_lafont)).
 
