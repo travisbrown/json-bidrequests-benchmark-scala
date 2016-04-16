@@ -1,6 +1,6 @@
 name := "json-bidrequests-benchmark"
 version := "0.0.1"
-scalaVersion in ThisBuild := "2.11.7"
+scalaVersion in ThisBuild := "2.11.8"
 
 lazy val benchs = (project in file("benchs"))
   .dependsOn(common)
@@ -28,9 +28,9 @@ lazy val playjson = (project in file("parsers/play"))
 lazy val circe = (project in file("parsers/circe"))
   .settings(
     libraryDependencies ++= Seq(
-      "io.circe" %% "circe-core" % "0.3.0",
-      "io.circe" %% "circe-generic" % "0.3.0",
-      "io.circe" %% "circe-parser" % "0.3.0"
+      "io.circe" %% "circe-core" % "0.4.0",
+      "io.circe" %% "circe-generic" % "0.4.0",
+      "io.circe" %% "circe-parser" % "0.4.0"
     )
   ).dependsOn(common)
 
