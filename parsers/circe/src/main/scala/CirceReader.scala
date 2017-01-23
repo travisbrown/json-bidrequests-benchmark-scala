@@ -1,5 +1,6 @@
 package parsers
 
+import cats.syntax.either._
 import io.circe._
 import io.circe.generic.semiauto._
 
@@ -11,9 +12,9 @@ object CirceReader extends BidRequestReader {
 
   override def parse(line: String, lastResult: ParsingResult): ParsingResult =
     io.circe.jawn.decode[BidRequest](line) match {
-      case cats.data.Xor.Left(ParsingFailure(_, _)) => lastResult.incrCannotParse
-      case cats.data.Xor.Left(DecodingFailure(_, _)) => lastResult.incrCannotUnmarshal
-      case cats.data.Xor.Right(_) => lastResult.incrOk
+      case Left(ParsingFailure(_, _)) => lastResult.incrCannotParse
+      case Left(DecodingFailure(_, _)) => lastResult.incrCannotUnmarshal
+      case Right(_) => lastResult.incrOk
     }
 
   /**

@@ -3,6 +3,7 @@ package parsers
 import scala.util.Success
 
 import argonaut.Argonaut._
+import argonaut.JawnParser.facade
 import argonaut._
 
 import models._
@@ -11,7 +12,7 @@ import models.bidrequest.device._
 
 object ArgonautReader extends BidRequestReader {
   override def parse(line: String, lastResult: ParsingResult) = {
-    jawn.support.argonaut.Parser.parseFromString(line) match {
+    jawn.Parser.parseFromString(line) match {
       case Success(json) =>
         json.as[BidRequest].fold(
           { case (_, _) => lastResult.incrCannotUnmarshal },

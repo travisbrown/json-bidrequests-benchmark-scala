@@ -12,7 +12,7 @@ lazy val benchs = (project in file("benchs"))
   .enablePlugins(JmhPlugin)
 
 libraryDependencies in ThisBuild ++= Seq(
-  "org.spire-math" %% "jawn-parser" % "0.8.4"
+  "org.spire-math" %% "jawn-parser" % "0.10.4"
 )
 
 lazy val common = (project in file("parsers/common"))
@@ -20,42 +20,42 @@ lazy val common = (project in file("parsers/common"))
 lazy val playjson = (project in file("parsers/play"))
   .settings(
     libraryDependencies ++= Seq(
-      "com.typesafe.play" %% "play-json" % "2.4.2",
-      "org.spire-math" %% "jawn-play" % "0.8.4"
+      "com.typesafe.play" %% "play-json" % "2.5.10",
+      "org.spire-math" %% "jawn-play" % "0.10.4"
     )
   ).dependsOn(common)
 
 lazy val circe = (project in file("parsers/circe"))
   .settings(
     libraryDependencies ++= Seq(
-      "io.circe" %% "circe-core" % "0.4.0",
-      "io.circe" %% "circe-generic" % "0.4.0",
-      "io.circe" %% "circe-parser" % "0.4.0"
+      "io.circe" %% "circe-core" % "0.7.0",
+      "io.circe" %% "circe-generic" % "0.7.0",
+      "io.circe" %% "circe-parser" % "0.7.0"
     )
   ).dependsOn(common)
 
 lazy val json4s = (project in file("parsers/json4s"))
   .settings(
     libraryDependencies ++= Seq(
-      "org.json4s" %% "json4s-native" % "3.3.0",
-      "org.json4s" %% "json4s-jackson" % "3.3.0",
-      "org.spire-math" %% "jawn-json4s" % "0.8.4"
+      "org.json4s" %% "json4s-native" % "3.5.0",
+      "org.json4s" %% "json4s-jackson" % "3.5.0",
+      "org.spire-math" %% "jawn-json4s" % "0.10.4"
     )
   ).dependsOn(common)
 
 lazy val argonaut = (project in file("parsers/argonaut"))
   .settings(
     libraryDependencies ++= Seq(
-      "io.argonaut" %% "argonaut" % "6.1",
-      "org.spire-math" %% "jawn-argonaut" % "0.8.4"
+      "io.argonaut" %% "argonaut" % "6.2-RC2",
+      "io.argonaut" %% "argonaut-jawn" % "6.2-RC2"
     )
   ).dependsOn(common)
 
 lazy val spray = (project in file("parsers/spray"))
   .settings(
     libraryDependencies ++= Seq(
-      "io.spray" %%  "spray-json" % "1.3.2",
-      "org.spire-math" %% "jawn-spray" % "0.8.4"
+      "io.spray" %%  "spray-json" % "1.3.3",
+      "org.spire-math" %% "jawn-spray" % "0.10.4"
     )
   ).dependsOn(common)
 
